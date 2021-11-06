@@ -1,3 +1,6 @@
 [submodule "Reachy-Mobile"]
 	path = Reachy-Mobile
 	url = https://github.com/Eirlab/Reachy-Mobile
+[submodule "firstbot"]
+	path = firstbot
+	url = https://github.com/Sdelpeuch/firstbot
