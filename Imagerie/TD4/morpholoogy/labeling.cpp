@@ -42,62 +42,7 @@ _add(int p, int r, int* roots)
 void 
 process(const char* imsname)
 {
-  Mat ims = imread(imsname);
 
-  if(!ims.data){
-    cerr<<"Image not found, exit"<<endl;
-    exit(EXIT_FAILURE);
-  }
-
-  cvtColor(ims, ims, CV_BGR2GRAY);
- 
-  int* roots = new int[ims.total()];
-  int  rows  = ims.rows;
-  int  cols  = ims.cols;
-  int p      = 0;
-  int r      = -1;
-  uchar* ps  = ims.data;
-
-  for(int i=0; i<rows; i++){
-    for(int j=0; j<cols; j++){
-      r = -1;
-
-      if( j>0 && (*(ps-1)==(*ps)) )
-	r = _union( _find(p-1, roots), r, roots);
-
-      if( (i>0 && j>0) && (*(ps-1-cols)==(*ps)) ) 
-	r = _union( _find(p-1-cols, roots), r, roots);
-
-      if( i>0 && (*(ps-cols) == (*ps)) ) 
-	r = _union(_find(p-cols, roots), r, roots);
-
-      if( (j<(cols-1) && i>0) && (*(ps+1-cols)==(*ps)) )
-	r = _union(_find(p+1-cols, roots), r, roots);
-
-      r = _add(p, r, roots);
-
-      p++; 
-      ps++; 
-    }
-  }
-
-  for(p=0; p<rows*cols; p++){ 
-    roots[p] = _find(p, roots);
-  }
-
-  int l=0;
-  for(int i=0; i<rows; i++){
-    for(int j=0; j<cols; j++){
-      int p = i*cols+j;
-      if(roots[p]==p)
-	roots[p] = l++;
-      else
-	roots[p] = roots[roots[p]];
-    }
-  }
-  
-  cout<<"labeling: "<< l << " components detected"<<endl;
-  delete [] roots;
 }
 
 void 

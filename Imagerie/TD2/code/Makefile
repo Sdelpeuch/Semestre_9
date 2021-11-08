@@ -37,3 +37,4 @@ clean:
 cleanall: clean
 	-rm -r $(BINDIR)
 	$(RM) $(BIN) *.o
+	rm -f *.png

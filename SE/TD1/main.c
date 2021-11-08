@@ -11,14 +11,6 @@ void blink(){
     }
 }
 
-void button(){
-    DDRB |= _BV(PB5);
-    DDRD |= _BV(PD2);
-    if(PIND & _BV(PD2)){
-        PORTB |= _BV(PB5);
-    }
-}
-
 int main() {
     button();
 }
