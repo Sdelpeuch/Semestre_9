@@ -8,27 +8,51 @@
 using namespace cv;
 using namespace std;
 
-bool hasEnding(std::string const &fullString, std::string const &ending) {
-    if (fullString.length() >= ending.length()) {
-        return (0 == fullString.compare(fullString.length() - ending.length(), ending.length(), ending));
-    } else {
-        return false;
+//Load a grayscale image
+Mat loadImage(const char* filename)
+{
+    Mat image = imread(filename, CV_LOAD_IMAGE_GRAYSCALE);
+    if(image.empty())
+    {
+        cout << "Could not open or find the image" << endl;
+        exit(EXIT_FAILURE);
     }
+    return image;
 }
 
-void saveImage(const char *imdname, Mat *image) {
-    // On vérifie le nom rentré par l'utilisateur
-    if (!hasEnding(imdname, ENDING)) { // On vérifie que ca se termine bien par .png sinon OpenCV plante
-        cout << WARNING << "name provide is not complete, adding \"" << ENDING << "\"." << endl;
-        imdname = string(imdname).append(ENDING).c_str();
+//Load a structured element (a gray scale image)
+Mat loadStructuringElement(const char* filename)
+{
+    Mat element = imread(filename, CV_LOAD_IMAGE_GRAYSCALE);
+    if(element.empty())
+    {
+        cout << "Could not open or find the element" << endl;
+        exit(EXIT_FAILURE);
     }
-
-    cout << INFO << "Saving matrice to " << imdname << " ..." << endl;
-    imwrite(imdname, *image); // sauvegarde
+    return element;
 }
 
+//Save and display an image
+void saveAndDisplay(const char* filename, Mat image)
+{
+    imwrite(filename, image);
+    imshow(filename, image);
+    waitKey(0);
+}
+
+// Dilate an image
+Mat dilate(Mat image, Mat element)
+{
+    Mat dilated = Mat::zeros(image.size(), CV_LOAD_IMAGE_GRAYSCALE);
+    mm(element, image, dilated, &maximum);
+    return dilated;
+}
 
 void process(const char *sename, const char *imsname, const char *imdname) {
+    Mat image = loadImage(imsname);
+    Mat element = loadStructuringElement(sename);
+    Mat dilated = dilate(image, element);
+    saveAndDisplay(imdname, dilated);
 }
 
 void usage(const char *s) {

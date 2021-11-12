@@ -1,5 +1,5 @@
 CPPFLAGS= -I. -I/opt/opencv/include 
-CXXFLAGS= -Wall -Wextra -Werror
+CXXFLAGS= -Wall -Wextra
 LDFLAGS = -Wl,-R/opt/opencv/lib -L/opt/opencv/lib
 LDLIBS=\
 	-lopencv_core\
@@ -7,7 +7,7 @@ LDLIBS=\
 	-lopencv_highgui
 
 #modify DATA or VIEWER path command if not applicable
-VIEWER= pvisu
+VIEWER= eog
 DATA= ../data
 
 OBJ= morphology.o

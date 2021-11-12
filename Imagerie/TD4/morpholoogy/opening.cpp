@@ -29,6 +29,42 @@ void saveImage(const char *imdname, Mat *image) {
 
 
 void process(const char *sename, const char *imsname, const char *imdname) {
+
+    // Chargement de l'image de travail
+    Mat ims = imread(imsname, CV_LOAD_IMAGE_GRAYSCALE);
+    if (!ims.data) {
+        cout << ERROR << "Could not open the image." << imsname << endl;
+        exit(1);
+    }
+
+    // Chargement du shape SE
+    Mat se = imread(sename, CV_LOAD_IMAGE_GRAYSCALE);
+    if (!se.data) {
+        cout << ERROR << "Could not open the image." << sename << endl;
+        exit(1);
+    }
+
+    // Préparation d'une nouvelle matrice pour le résultat
+    const int height = int(ims.size().height);
+    const int width = int(ims.size().width);
+    Mat imd = Mat::zeros(height, width, CV_LOAD_IMAGE_GRAYSCALE);
+    Mat imd2 = Mat::zeros(height, width, CV_LOAD_IMAGE_GRAYSCALE);
+
+    // Application de la dilatation
+    clock_t start, end;
+    double duration_sec;
+    cout << INFO << "Applying Opening to \"" << imsname << "\" with SE sharp \"" << sename << "\"..." << endl;
+    start = clock();
+    mm(se, ims, imd, &minimum); // erosion ...
+    mm(se, imd, imd2, &maximum); // ... puis dilatation
+    end = clock();
+    duration_sec = double(end - start) / CLOCKS_PER_SEC;
+    cout << INFO << "Time elapsed while applying Opening : " << duration_sec << "s" << endl;
+
+
+    // Enregistrement de l'image
+    saveImage(imdname, &imd2);
+
 }
 
 void usage(const char *s) {

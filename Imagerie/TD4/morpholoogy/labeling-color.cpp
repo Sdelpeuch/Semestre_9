@@ -13,25 +13,22 @@
 using namespace cv;
 using namespace std;
 
-bool hasEnding(std::string const &fullString, std::string const &ending) {
-    if (fullString.length() >= ending.length()) {
-        return (0 == fullString.compare(fullString.length() - ending.length(), ending.length(), ending));
-    } else {
-        return false;
+// Load a binary image
+Mat loadImage(string path) {
+    Mat image = imread(path, CV_LOAD_IMAGE_GRAYSCALE);
+    if (image.empty()) {
+        cout << ERROR << "Image " << path << " not found" << endl;
+        exit(EXIT_FAILURE);
     }
+    return image;
 }
 
-void saveImage(const char *imdname, Mat *image) {
-    // On vérifie le nom rentré par l'utilisateur
-    if (!hasEnding(imdname, ENDING)) { // On vérifie que ca se termine bien par .png sinon OpenCV plante
-        cout << WARNING << "name provide is not complete, adding \"" << ENDING << "\"." << endl;
-        imdname = string(imdname).append(ENDING).c_str();
-    }
-
-    cout << INFO << "Saving matrice to " << imdname << " ..." << endl;
-    imwrite(imdname, *image); // sauvegarde
+// Save a binary image
+void saveImage(Mat image, string path) {
+    imwrite(path, image);
+    imshow("Image", image);
+    waitKey(0);
 }
-
 
 int _find(int p, int *roots) {
     while (roots[p] != p)
@@ -61,7 +58,57 @@ int _add(int p, int r, int *roots) {
 }
 
 void process(const char *imsname, const char *regname, const char *colorname) {
-
+    Mat ims = loadImage(imsname);
+    int *roots = new int[ims.total()];
+    int rows = ims.rows;
+    int cols = ims.cols;
+    int p = 0;
+    int r = -1;
+    uchar *ps = ims.data;
+    Mat reg_mat = Mat::zeros(ims.size().height, ims.size().width, CV_LOAD_IMAGE_GRAYSCALE);
+    Mat color_mat = Mat::zeros(ims.size().height, ims.size().width, CV_8UC3);
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            r = -1;
+            if (j > 0 && (*(ps - 1) == (*ps)))
+                r = _union(_find(p - 1, roots), r, roots);
+            if ((i > 0 && j > 0) && (*(ps - 1 - cols) == (*ps)))
+                r = _union(_find(p - 1 - cols, roots), r, roots);
+            if (i > 0 && (*(ps - cols) == (*ps)))
+                r = _union(_find(p - cols, roots), r, roots);
+            if ((j < (cols - 1) && i > 0) && (*(ps + 1 - cols) == (*ps)))
+                r = _union(_find(p + 1 - cols, roots), r, roots);
+            r = _add(p, r, roots);
+            p++;
+            ps++;
+        }
+    }
+    for (p = 0; p < rows * cols; p++) {
+        roots[p] = _find(p, roots);
+    }
+    int l = 0;
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            int p = i * cols + j;
+            if (roots[p] == p){
+                roots[p] = l++;
+            }
+            else{
+                roots[p] = roots[roots[p]];
+            }
+            reg_mat.at<uchar>(i,j) = roots[p];
+            if (roots[p] > 0) {
+                srand(roots[p]);
+                color_mat.at<Vec3b>(i, j)[0] = (uchar) (rand()%255); // B
+                color_mat.at<Vec3b>(i, j)[1] = (uchar) (rand()%255); // G
+                color_mat.at<Vec3b>(i, j)[2] = (uchar) (rand()%255); // R
+            }
+        }
+    }
+    cout << "labeling: " << l << " components detected" << endl;
+    saveImage(reg_mat, regname);
+    saveImage(color_mat, colorname);
+    delete[] roots;
 }
 
 void usage(const char *s) {
