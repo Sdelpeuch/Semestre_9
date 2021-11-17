@@ -3,18 +3,19 @@ OBJCOPY=avr-objcopy
 PLATFORM = atmega328p
 CFLAGS=-Os -DF_CPU=16000000UL -mmcu=$(PLATFORM)
 PORT=/dev/ttyACM0
-OBJECTS = main
+BIN = main
+OBJS=main.o uart.o
 
-all: main.hex
+all: $(BIN).hex
 
-main.hex: main.elf
-	$(OBJCOPY) -O ihex -R .eeprom main.elf main.hex
+$(BIN).hex: $(BIN).elf
+	$(OBJCOPY) -O ihex -R .eeprom $< $@
 
-main.elf: $(OBJECTS).o
+$(BIN).elf: $(OBJS)
 	$(CC) -o $@ $^ $(CFLAGS)
 
-install: main.hex
-	avrdude -F -V -c arduino -p $(PLATFORM) -P $(PORT) -b 115200 -U flash:w:main.hex:i
+install: ${BIN}.hex
+	avrdude -F -V -c arduino -p $(PLATFORM) -P $(PORT) -b 115200 -U flash:w:$<
 
 clean:
-	rm -f *.elf *.hex *.o
+	rm -f ${BIN}.elf ${BIN}.hex ${OBJS}
