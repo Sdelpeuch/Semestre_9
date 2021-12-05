@@ -17,7 +17,7 @@ def display_images():
     """
     Affiche les 9 premières images de MNIST avec leurs classes associées
     """
-    (X_train, y_train), (X_test, y_test) = mnist.load_data()
+    (X_train, y_train), (_, y_test) = mnist.load_data()
     for i in range(9):
         plt.subplot(331 + i)
         plt.imshow(X_train[i], cmap=plt.get_cmap('gray'))
@@ -61,7 +61,7 @@ def model_one_neuron_use():
     Entraîne et utilise le réseau de neurones à une seule couche sur les données MNIST
     """
     model = model_one_neuron()
-    (X_train, y_train), (X_test, y_test) = load_one_hot()
+    (X_train, y_train), (_, y_test) = load_one_hot()
     history = model.fit(X_train, y_train, epochs=10, batch_size=32)
     # return model.evaluate(X_test, y_test)
     return history
@@ -95,8 +95,7 @@ def model_multi_layers(activation_1, activation_2, optimizer, loss):
 
 
 def model_multi_layers_use():
-    model = model_one_neuron()
-    (X_train, y_train), (X_test, y_test) = load_one_hot()
+    (X_train, y_train), (_, y_test) = load_one_hot()
     model_1 = model_multi_layers('relu', 'softmax', 'sgd', 'mae')
     model_2 = model_multi_layers('sigmoid', 'softmax', 'sgd', 'mae')
     model_3 = model_multi_layers('relu', 'softmax', 'adam', 'mae')
@@ -180,7 +179,7 @@ def model_convolution():
 
 def model_convolution_use():
     model = model_convolution()
-    (X_train, y_train), (X_test, y_test) = load_2D_data()
+    (X_train, y_train), (_, y_test) = load_2D_data()
     history = model.fit(X_train, y_train, epochs=10, batch_size=32)
     for layer in model.layers:
         weights = layer.get_weights()
@@ -204,8 +203,8 @@ def VGG16_use():
 
 
 if __name__ == "__main__":
-    # display_images()
-    # plot_loss_accuracy("One Layer", model_one_neuron_use())
-    # plot_multi_layers_use(model_multi_layers_use())
-    # plot_loss_accuracy("Convolution model", model_convolution_use()) # La diminution des filtres pour les couches de convolution entraine une loss plus élevée et une accuracy légèrement plus faible
+    display_images()
+    plot_loss_accuracy("One Layer", model_one_neuron_use())
+    plot_multi_layers_use(model_multi_layers_use())
+    plot_loss_accuracy("Convolution model", model_convolution_use()) # La diminution des filtres pour les couches de convolution entraine une loss plus élevée et une accuracy légèrement plus faible
     VGG16_use()
