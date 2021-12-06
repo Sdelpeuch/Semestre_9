@@ -32,13 +32,11 @@ r=[3 3]; % rayon cercle 1 puis rayon cercle 2
 c = [c1;c2];
 cp1=[0 0];
 cp2=[norm(c2-c1) 0];
-
 circle(c1(1),c1(2), r(1));
 circle(c2(1),c2(2), r(2));
-[sol1, err, it]=newton(cp1,c,r, 1000, 10^-6);
-[sol2, err, it]=newton(cp2,c,r, 1000, 10^-6);
+[sol1, err, it, xx]=newton(cp1,c,r, 1000, 10^-2);
+[sol2, err, it, xx]=newton(cp2,c,r, 1000, 10^-2);
 
-sol1, sol2
+sol1, sol2;
+newtonTest(sol1, sol2, c, r, 10^-2, 1000);
 
-plot(sol1(1),sol1(2),'+b')
-plot(sol2(1),sol2(2),'+b')

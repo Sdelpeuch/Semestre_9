@@ -1,13 +1,16 @@
-function [sol,err,iter] = newton(p, c, l, maxiter, precision)
+function [sol,err,iter, xx] = newton(p, c, l, maxiter, precision)
     X=p';
     [F,J] = circle_equation(p,c,l);
     err=norm(F);
     iter=0;
+    xx=[];
     while err>precision && iter<maxiter
         [F,J]= circle_equation(X,c,l);
         iter=iter+1;
         err=norm(F);
-        X = X - inv(J)*F;
+        X = X - J\F;
+        xx = [xx X];
+
     end
     sol = X';
 end
